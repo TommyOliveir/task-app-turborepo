@@ -1,17 +1,13 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { TaskStatus } from '../task.status.enum';
 
 @Entity()
-export class Task {
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  title: string;
+  username: string;
 
   @Column()
-  description: string;
-
-  @Column()
-  status: TaskStatus;
+  password: string;
 }
