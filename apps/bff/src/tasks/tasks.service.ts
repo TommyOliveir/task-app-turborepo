@@ -1,20 +1,61 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task-dto';
+import { PrismaService } from 'src/prismaService/prisma.service';
+import { UpdateTaskDto } from './dto/update-task-dto';
 
 @Injectable()
 export class TasksService {
-  prisma: any;
+  constructor(private readonly prismaService: PrismaService) {}
+
   getHello(): string {
     return 'Hello';
   }
-  async createArticle(createArticleDto: CreateTaskDto) {
-    const { title, description } = createArticleDto;
 
-    return this.prisma.article.create({
+  async getAllTasks() {
+    return this.prismaService.task.findMany({});
+  }
+
+  async createTask(createTaskDto: CreateTaskDto) {
+    const { title = '', description } = createTaskDto;
+
+    return this.prismaService.task.create({
       data: {
         title,
         description,
       },
     });
+  }
+
+  async getTaskById(id: string) {
+    return this.prismaService.task.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async updateTaskById(id: string, updateTaskDto: UpdateTaskDto) {
+    try {
+      return await this.prismaService.task.update({
+        where: { id },
+        data: updateTaskDto,
+      });
+    } catch (error: any) {
+      if (error?.code === 'P2025') {
+        throw new NotFoundException(`Task with id ${id} not found`);
+      }
+      throw error;
+    }
+  }
+
+  async deleteTaskById(id: string) {
+    return this.prismaService.task
+      .delete({ where: { id } })
+      .catch((error: any) => {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(`Task with id ${id} not found`);
+        }
+        throw error;
+      });
   }
 }
