@@ -15,13 +15,14 @@ export class TasksService {
     return this.prismaService.task.findMany({});
   }
 
-  async createTask(createTaskDto: CreateTaskDto) {
+  async createTask(createTaskDto: CreateTaskDto, userId: string) {
     const { title = '', description } = createTaskDto;
 
     return this.prismaService.task.create({
       data: {
         title,
         description,
+        user: { connect: { id: userId } },
       },
     });
   }

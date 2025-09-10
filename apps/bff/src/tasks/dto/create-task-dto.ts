@@ -1,4 +1,4 @@
 export class CreateTaskDto {
-  title: string | undefined;
+  title!: string | undefined;
   description?: string;
 }

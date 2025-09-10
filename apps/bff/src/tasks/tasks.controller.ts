@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task-dto';
@@ -21,8 +22,9 @@ export class TasksController {
     return this.tasksService.getAllTasks();
   }
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.createTask(createTaskDto);
+  create(@Body() createTaskDto: CreateTaskDto, @Req() req: any) {
+    const userId = req.user.id;
+    return this.tasksService.createTask(createTaskDto, userId);
   }
 
   @Get(':id')
