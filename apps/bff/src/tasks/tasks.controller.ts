@@ -1,49 +1,47 @@
+import { Task } from './../../generated/prisma/index.d';
 import {
-  Body,
   Controller,
-  Delete,
   Get,
+  Post,
+  Body,
   Param,
   Patch,
-  Post,
-  Query,
+  Delete,
+  Req,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskStatusDto } from './dto/update-task.dto';
-import { Task } from './task.entity';
+import { CreateTaskDto } from './dto/create-task-dto';
+import { UpdateTaskDto } from './dto/update-task-dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
-    return this.tasksService.getTasks(filterDto);
+  getAllTasks() {
+    return this.tasksService.getAllTasks();
+  }
+  @Post()
+  create(@Body() createTaskDto: CreateTaskDto, @Req() req: any) {
+    const userId = req.user.id;
+    return this.tasksService.createTask(createTaskDto, userId);
   }
 
-  @Get('/:id')
-  getTaskById(@Param('id') id: string): Promise<Task> {
+  @Get(':id')
+  getTaskById(@Param('id') id: string) {
     return this.tasksService.getTaskById(id);
   }
 
-  @Post()
-  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto);
-  }
-
-  @Delete('/:id')
-  deleteTask(@Param('id') id: string): Promise<void> {
-    return this.tasksService.deleteTask(id);
-  }
-
-  @Patch('/:id/status')
-  updateTaskStatus(
+  @Patch(':id')
+  updateTaskById(
     @Param('id') id: string,
-    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
-  ): Promise<Task> | undefined {
-    const { status } = updateTaskStatusDto;
-    return this.tasksService.updateTaskStatus(id, status);
+    @Body() updateTaskDto: UpdateTaskDto,
+  ) {
+    return this.tasksService.updateTaskById(id, updateTaskDto);
+  }
+
+  @Delete(':id')
+  deleteTaskById(@Param('id') id: string) {
+    return this.tasksService.deleteTaskById(id);
   }
 }

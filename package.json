@@ -12,14 +12,22 @@
   "devDependencies": {
     "prettier": "^3.6.2",
     "turbo": "^2.5.6",
-    "typescript": "5.9.2"
+    "typescript": "^5.2.0"
   },
   "engines": {
     "node": ">=18"
   },
   "packageManager": "yarn@1.22.22",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "libs/*"
+    ],
+    "nohoist": [
+      "apps/bff/@prisma/client",
+      "apps/bff/@prisma/client/**",
+      "apps/bff/prisma",
+      "apps/bff/prisma/**"
+    ]
+  }
 }

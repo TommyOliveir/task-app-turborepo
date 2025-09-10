@@ -1,48 +1,62 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Task } from './dto/task.entity';
-import { TasksRepository } from './task.repository';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { TaskStatus } from './task.status.enum';
+import { CreateTaskDto } from './dto/create-task-dto';
+import { PrismaService } from 'src/prismaService/prisma.service';
+import { UpdateTaskDto } from './dto/update-task-dto';
 
 @Injectable()
 export class TasksService {
-  constructor(
-    @InjectRepository(TasksRepository)
-    private tasksRepository: TasksRepository,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
-    return this.tasksRepository.getTasks(filterDto);
+  getHello(): string {
+    return 'Hello';
   }
 
-  async getTaskById(id: string): Promise<Task> {
-    const found = await this.tasksRepository.findOne(id);
+  async getAllTasks() {
+    return this.prismaService.task.findMany({});
+  }
 
-    if (!found) {
-      throw new NotFoundException();
+  async createTask(createTaskDto: CreateTaskDto, userId: string) {
+    const { title = '', description } = createTaskDto;
+
+    return this.prismaService.task.create({
+      data: {
+        title,
+        description,
+        user: { connect: { id: userId } },
+      },
+    });
+  }
+
+  async getTaskById(id: string) {
+    return this.prismaService.task.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async updateTaskById(id: string, updateTaskDto: UpdateTaskDto) {
+    try {
+      return await this.prismaService.task.update({
+        where: { id },
+        data: updateTaskDto,
+      });
+    } catch (error: any) {
+      if (error?.code === 'P2025') {
+        throw new NotFoundException(`Task with id ${id} not found`);
+      }
+      throw error;
     }
-    return found;
   }
 
-  createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksRepository.createTask(createTaskDto);
-  }
-
-  async deleteTask(id: string): Promise<void> {
-    const result = await this.tasksRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Task with Id '${id}' not found`);
-    }
-  }
-
-  async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
-    const task = await this.getTaskById(id);
-
-    task.status = status;
-    await this.tasksRepository.save(task);
-
-    return task;
+  async deleteTaskById(id: string) {
+    return this.prismaService.task
+      .delete({ where: { id } })
+      .catch((error: any) => {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(`Task with id ${id} not found`);
+        }
+        throw error;
+      });
   }
 }
