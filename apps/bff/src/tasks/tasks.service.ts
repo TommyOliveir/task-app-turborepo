@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task-dto';
 import { PrismaService } from 'src/prismaService/prisma.service';
 import { UpdateTaskDto } from './dto/update-task-dto';
@@ -15,16 +19,34 @@ export class TasksService {
     return this.prismaService.task.findMany({});
   }
 
-  async createTask(createTaskDto: CreateTaskDto, userId: string) {
-    const { title = '', description } = createTaskDto;
+  // async createTask(createTaskDto: CreateTaskDto, userId: string) {
+  //   const { title = '', description } = createTaskDto;
 
-    return this.prismaService.task.create({
-      data: {
-        title,
-        description,
-        user: { connect: { id: userId } },
-      },
-    });
+  //   return this.prismaService.task.create({
+  //     data: {
+  //       title,
+  //       description,
+  //       user: { connect: { id: userId } },
+  //     },
+  //   });
+  // }
+
+  async createTask(createTaskDto: CreateTaskDto, userId: string) {
+    try {
+      const { title = '', description } = createTaskDto;
+      return await this.prismaService.task.create({
+        data: {
+          title,
+          description,
+          user: {
+            connect: { id: userId },
+          },
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('error');
+    }
   }
 
   async getTaskById(id: string) {

@@ -1,4 +1,3 @@
-import { Task } from './../../generated/prisma/index.d';
 import {
   Controller,
   Get,
@@ -8,12 +7,15 @@ import {
   Patch,
   Delete,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task-dto';
 import { UpdateTaskDto } from './dto/update-task-dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
@@ -23,7 +25,7 @@ export class TasksController {
   }
   @Post()
   create(@Body() createTaskDto: CreateTaskDto, @Req() req: any) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     return this.tasksService.createTask(createTaskDto, userId);
   }
 
