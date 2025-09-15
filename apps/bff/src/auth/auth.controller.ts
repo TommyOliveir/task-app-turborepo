@@ -13,7 +13,9 @@ export class AuthController {
   //   }
 
   @Post('login')
-  async login(@Body() createUserDto: CreateUserDto) {
+  async login(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<{ accessToken: string }> {
     return this.authService.validateUser(createUserDto);
   }
 
