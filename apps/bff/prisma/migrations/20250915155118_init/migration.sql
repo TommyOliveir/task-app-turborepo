@@ -26,8 +26,5 @@ CREATE UNIQUE INDEX "User_username_key" ON "public"."User"("username");
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Task_title_key" ON "public"."Task"("title");
-
 -- AddForeignKey
 ALTER TABLE "public"."Task" ADD CONSTRAINT "Task_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
