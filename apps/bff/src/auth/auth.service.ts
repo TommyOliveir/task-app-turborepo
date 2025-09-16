@@ -19,7 +19,11 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const payload: JwtPayload = { email: user.email, sub: user.id };
+      const payload: JwtPayload = {
+        username: user.username,
+        email: user.email,
+        userId: user.id,
+      };
       const accessToken: string = this.jwtService.sign(payload);
       // const { password, ...result } = user;
 
@@ -28,13 +32,6 @@ export class AuthService {
       throw new UnauthorizedException('Please check your login credentials');
     }
   }
-
-  //   async login(user: any) {
-  //     const payload = { email: user.email, sub: user.id };
-  //     return {
-  //       access_token: this.jwtService.sign(payload),
-  //     };
-  //   }
 
   async register(createUserDto: CreateUserDto) {
     const { username, email, password } = createUserDto;
