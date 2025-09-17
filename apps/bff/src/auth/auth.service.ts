@@ -25,9 +25,9 @@ export class AuthService {
         userId: user.id,
       };
       const accessToken: string = this.jwtService.sign(payload);
-      // const { password, ...result } = user;
+      const { password, ...result } = user;
 
-      return { accessToken };
+      return { accessToken, ...result };
     } else {
       throw new UnauthorizedException('Please check your login credentials');
     }
