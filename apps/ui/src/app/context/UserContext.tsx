@@ -7,13 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-
-type User = {
-  accessToken?: string;
-  id: string;
-  username: string;
-  email?: string;
-} | null;
+import { User } from "../types/user";
 
 type UserContextType = {
   user: User;

@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext";
+import Link from "next/link";
 
 const LoginUser = () => {
   const { setUser } = useUser();
@@ -24,7 +25,6 @@ const LoginUser = () => {
     console.log("Response:", data);
 
     if (data.accessToken) {
-      localStorage.setItem("accessToken", data.accessToken);
       setUser(data);
       redirect("/profile");
     }
@@ -32,16 +32,25 @@ const LoginUser = () => {
   };
 
   return (
-    <div>
-      LoginUser
-      <form onSubmit={handleSubmit} className="p-4 space-y-2">
+    <div className="bg-gray-100 h-screen grid place-items-center">
+      <form
+        onSubmit={handleSubmit}
+        className="p-6 space-y-6 bg-white rounded p-4 shadow w-1/4"
+      >
+        <h2 className="font-bold text-2xl">Log in</h2>
+        <p>
+          Don't have account?{" "}
+          <span className="text-blue-500 underline">
+            <Link href="/signup">Create an account</Link>
+          </span>
+        </p>
         <input
           type="email"
           name="email"
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
-          className="border p-2 rounded w-full"
+          className="border border-gray-300  p-2 rounded w-full"
         />
         <input
           type="password"
@@ -49,11 +58,11 @@ const LoginUser = () => {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
-          className="border p-2 rounded w-full"
+          className="border border-gray-300  p-2 rounded w-full"
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:scale-95 transform transition duration-200 cursor-pointer"
         >
           Submit
         </button>

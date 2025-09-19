@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Signup() {
@@ -45,48 +46,50 @@ export default function Signup() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Signup</h2>
+    <div className="grid place-items-center bg-gray-100">
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", border: "1px green solid" }}
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", border: "1px green solid" }}
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", border: "1px green solid" }}
-          />
-        </div>
+      <form
+        onSubmit={handleSubmit}
+        className="p-6 space-y-6 bg-white rounded p-4 shadow w-1/4"
+      >
+        <h2 className="font-bold text-2xl">Sign up</h2>
+        <p>
+          Already have account?{" "}
+          <span className="text-blue-500 underline">
+            <Link href="/login">Log in</Link>
+          </span>
+        </p>
+        <input
+          className="border border-gray-300  p-2 rounded w-full"
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="Username"
+        />
+
+        <input
+          className="border border-gray-300  p-2 rounded w-full"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+        />
+
+        <input
+          className="border border-gray-300  p-2 rounded w-full"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Password"
+        />
+
         <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:scale-95 transform transition duration-200 cursor-pointer"
           type="submit"
-          style={{
-            padding: "10px 15px",
-            background: "yellowgreen",
-            cursor: "pointer",
-          }}
         >
           Submit
         </button>
