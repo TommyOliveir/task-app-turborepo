@@ -1,4 +1,3 @@
-// AddTask.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -6,7 +5,7 @@ import { useUser } from "../context/UserContext";
 import { createTask } from "../services/createTask";
 
 interface AddTaskProps {
-  onTaskCreated?: () => void; // optional callback
+  onTaskCreated?: () => void;
 }
 
 const AddTask: React.FC<AddTaskProps> = ({ onTaskCreated }) => {

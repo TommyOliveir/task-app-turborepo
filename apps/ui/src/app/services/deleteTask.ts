@@ -1,7 +1,14 @@
-export const deleteTask = async (taskId: string) => {
+export const deleteTask = async (
+  taskId: string,
+  accessToken: string | undefined
+) => {
   try {
-    const response = await fetch(`/api/tasks/${taskId}`, {
+    const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
 
     if (!response.ok) {
