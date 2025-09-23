@@ -1,9 +1,34 @@
-import React from "react";
+"use client";
 
-const DeleteTask = () => {
+import React from "react";
+import { deleteTask } from "../services/deleteTask";
+import { useUser } from "../context/UserContext";
+
+type deleteTaskProps = {
+  taskId: string;
+  onTaskDeleted: () => void;
+};
+
+const DeleteTask = ({ taskId, onTaskDeleted }: deleteTaskProps) => {
+  const { user } = useUser();
+
+  const handleDelete = async (taskId: string) => {
+    console.log("Id delete", taskId);
+
+    try {
+      await deleteTask(taskId, user?.accessToken);
+      onTaskDeleted();
+    } catch (err) {
+      console.error("Task creation failed", err);
+    }
+  };
+
   return (
     <div>
-      <button className="px-4 py-2 bg-red-500 text-white  rounded hover:scale-95 transform transition duration-200  cursor-pointer">
+      <button
+        onClick={() => handleDelete(taskId)}
+        className="px-4 py-2 bg-red-500 text-white  rounded hover:scale-95 transform transition duration-200  cursor-pointer"
+      >
         Delete
       </button>
     </div>
