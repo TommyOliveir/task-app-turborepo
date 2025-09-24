@@ -1,10 +1,10 @@
-export type AddTaskData = {
+export type Task = {
+  id: string;
   title: string;
   description?: string;
 };
 
-export interface Task {
-  id: string;
+export interface CreateTask {
   title: string;
   description: string;
 }

@@ -1,8 +1,8 @@
-import { AddTaskData } from "../types/task";
+import { CreateTask } from "../types/task";
 import { User } from "../types/user";
 
 type CreateTaskParams = {
-  addTaskData: AddTaskData;
+  addTaskData: CreateTask;
   user: User | null;
 };
 
