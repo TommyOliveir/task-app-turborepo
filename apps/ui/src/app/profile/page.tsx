@@ -11,10 +11,9 @@ import { Task } from "../types/task";
 const ProfilePage = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
-
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
-  // Use TanStack Query to fetch tasks
   const {
     data: tasks = [],
     isLoading,
@@ -25,10 +24,9 @@ const ProfilePage = () => {
     queryFn: fetchTasks,
   });
 
-  // Pass this to AddTask to invalidate and refetch after adding task
   const onTaskCreated = () => {
-    queryClient.invalidateQueries({ queryKey: ["userTasks"] });
     setIsAddTaskOpen(false);
+    setEditingTaskId(null);
   };
 
   if (isLoading) return <p>Loading tasks...</p>;
@@ -49,12 +47,14 @@ const ProfilePage = () => {
               onClick={() => setIsAddTaskOpen((prev) => !prev)}
               className={` ${
                 isAddTaskOpen ? "bg-red-500" : "bg-blue-500"
-              } text-white px-4 py-2 rounded hover:scale-95 transform transition duration-200 cursor-pointer`}
+              } text-white px-4 py-2 rounded hover:bg-blue-400 transform transition duration-200 cursor-pointer`}
             >
               {isAddTaskOpen ? "X" : "Add Task"}
             </button>
           </div>
-          {isAddTaskOpen && <AddTask onTaskCreated={onTaskCreated} />}
+          {isAddTaskOpen && !editingTaskId && (
+            <AddTask onTaskCreated={onTaskCreated} />
+          )}
 
           {tasks.length === 0 ? (
             <p className="text-gray-500 mt-3">No tasks yet. Enjoy your day!</p>
@@ -66,15 +66,47 @@ const ProfilePage = () => {
                   className="flex justify-between p-3 rounded shadow bg-green-100"
                 >
                   <div className="flex-1">
-                    <h2 className="font-bold">{task.title}</h2>
-                    <p>{task.description}</p>
+                    {!editingTaskId && (
+                      <>
+                        <h2 className="font-bold">{task.title}</h2>
+                        <p>{task.description}</p>
+                      </>
+                    )}
+                    {editingTaskId === task.id && (
+                      <AddTask
+                        taskToEdit={{
+                          id: task.id,
+                          title: task.title,
+                          description: task.description,
+                        }}
+                        onTaskCreated={onTaskCreated}
+                        setEditingTaskId={() => setEditingTaskId(null)}
+                      />
+                    )}
                   </div>
-                  <DeleteTask
-                    taskId={task.id}
-                    onTaskDeleted={() =>
-                      queryClient.invalidateQueries({ queryKey: ["userTasks"] })
-                    }
-                  />
+
+                  {!editingTaskId && (
+                    <>
+                      <button
+                        onClick={() =>
+                          setEditingTaskId((prev) =>
+                            prev === task.id ? null : task.id
+                          )
+                        }
+                        className="self-start px-4 py-2  bg-green-500 text-white  rounded hover:scale-95 transform transition duration-200  cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                      <DeleteTask
+                        taskId={task.id}
+                        onTaskDeleted={() =>
+                          queryClient.invalidateQueries({
+                            queryKey: ["userTasks"],
+                          })
+                        }
+                      />
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
