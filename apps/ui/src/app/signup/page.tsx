@@ -32,13 +32,13 @@ export default function Signup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      const data = await res.json();
 
       if (res.ok) {
         setSuccess("Signup successful!");
         setFormData({ username: "", email: "", password: "" });
       } else {
-        const data = await res.json();
-        setError(data.error || "Something went wrong");
+        setError(data.message || "Something went wrong");
       }
     } catch (err) {
       setError("Network error. Try again.");
