@@ -1,9 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prismaService/prisma.service';
 import { CreateUserDto } from './dto/create-user-dto';
 import { JwtPayload } from './jwt-payload.interface';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -34,18 +40,32 @@ export class AuthService {
   }
 
   async register(createUserDto: CreateUserDto) {
-    const { username, email, password } = createUserDto;
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await this.prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-      },
-    });
-    const { password: _password, ...dataWithoutPassword } = user;
+    try {
+      const { username, email, password } = createUserDto;
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const user = await this.prisma.user.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+        },
+      });
+      const { password: _password, ...dataWithoutPassword } = user;
 
-    return dataWithoutPassword;
+      return dataWithoutPassword;
+    } catch (error) {
+      const prismaErrorCode = (error as any).code;
+
+      if (prismaErrorCode === 'P2002') {
+        const target = (error as any).meta?.target;
+        const field = Array.isArray(target) ? target.join(', ') : target;
+        throw new ConflictException(
+          `${field ?? 'Email or username'} already exists`,
+        );
+      }
+
+      throw new InternalServerErrorException('Failed to register user');
+    }
   }
 }
