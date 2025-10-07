@@ -1,10 +1,7 @@
 import React from "react";
-import { useUser } from "../context/UserContext";
 import { redirect } from "next/navigation";
 
 const Logout = () => {
-  const { user } = useUser();
-
   const handleLogout = async (e: React.FormEvent) => {
     console.log("logout");
     localStorage.removeItem("user");
