@@ -96,3 +96,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Reset prisma database when editing schema
+
+1. delete migration folder inisde prisma
+2. run in bff - npx prisma migrate reset
+3. run in bff - npx prisma migrate dev --name "init"

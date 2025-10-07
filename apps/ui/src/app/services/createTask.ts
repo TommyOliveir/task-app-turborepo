@@ -21,11 +21,13 @@ export async function createTask({ addTaskData, user }: CreateTaskParams) {
       body: JSON.stringify(addTaskData),
     });
 
+    const data = await res.json().catch(() => null);
+
     if (!res.ok) {
-      throw new Error(`Failed to create task: ${res.status}`);
+      // Throw the actual Nest error response
+      throw data || new Error(`Failed to create task: ${res.status}`);
     }
 
-    const data = await res.json();
     console.log("Response:", data);
     return data;
   } catch (error) {
