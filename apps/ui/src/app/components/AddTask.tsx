@@ -6,6 +6,8 @@ import { createTask } from "../services/createTask";
 import { Task } from "../types/task";
 import { updateTask } from "../services/updateTask";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ToastContainer, toast } from "react-toastify";
+import { useUpdateTaskMutation } from "../hooks/useUpdateTaskMutation";
 
 interface AddTaskProps {
   onTaskCreated?: () => void;
@@ -26,24 +28,13 @@ const AddTask = ({
 
   const queryClient = useQueryClient();
 
-  const { mutate: createTaskMutate } = useMutation({
+  const { mutateAsync: updateTaskMutateAsync } = useUpdateTaskMutation();
+
+  const { mutateAsync: createTaskMutateAsync } = useMutation({
     mutationFn: createTask,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["userTasks"],
-      });
-    },
-  });
-
-  const { mutate: updateTaskMutate } = useMutation({
-    mutationFn: updateTask,
-    onSuccess: (updatedTask) => {
-      queryClient.setQueryData(["userTasks"], (oldData: Task[]) => {
-        if (!oldData) return [];
-
-        return oldData.map((task) =>
-          task.id === updatedTask.id ? updatedTask : task
-        );
       });
     },
   });
@@ -60,62 +51,68 @@ const AddTask = ({
 
     try {
       if (taskToEdit?.id) {
-        updateTaskMutate({
+        await updateTaskMutateAsync({
           taskId: taskToEdit.id,
           updatedData: addTaskData,
           user,
         });
       } else {
-        createTaskMutate({ addTaskData, user });
+        await createTaskMutateAsync({ addTaskData, user });
       }
+
       setAddTaskData({ title: "", description: "" });
 
       if (onTaskCreated) onTaskCreated();
-    } catch (err) {
-      console.error("Task creation failed", err);
+    } catch (err: any) {
+      console.error("Task creation or update failed:", err);
+      // Show error to user when submitting task is empty (e.g. with toast)
+      const ErrorMessage =
+        err.message.length > 0 ? err.message.join(" and ") : err.message;
+      console.log("Task creation or update failed:", ErrorMessage);
+      toast.error(ErrorMessage);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-6 space-y-6 bg-white rounded w-full"
-    >
-      <input
-        name="title"
-        placeholder="Title"
-        value={addTaskData.title}
-        onChange={handleChange}
-        className="border border-gray-300 p-2 rounded w-full"
-      />
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={addTaskData.description}
-        onChange={handleChange}
-        className="border border-gray-300 p-2 rounded w-full"
-      />
-      <button
-        type="submit"
-        disabled={!(addTaskData.title.trim() && addTaskData.description.trim())}
-        className={`px-4 py-2 rounded transform transition duration-200 cursor-pointer ${
-          !(addTaskData.title.trim() && addTaskData.description.trim())
-            ? "bg-gray-300 text-white cursor-not-allowed"
-            : "bg-blue-500 text-white hover:bg-blue-400"
-        }`}
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="p-6 space-y-6 bg-white rounded w-full"
       >
-        Submit
-      </button>
-      {setEditingTaskId && (
+        <input
+          name="title"
+          placeholder="Title"
+          value={addTaskData.title}
+          onChange={handleChange}
+          className="border border-gray-300 p-2 rounded w-full"
+        />
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={addTaskData.description}
+          onChange={handleChange}
+          className="border border-gray-300 p-2 rounded w-full"
+        />
         <button
-          onClick={setEditingTaskId}
-          type="button"
-          className={`ml-2 text-white px-4 py-2 bg-red-500 hover:bg-red-400 rounded transform transition duration-200 cursor-pointer`}
+          type="submit"
+          className="px-4 py-2 rounded transform transition duration-200 cursor-pointer 
+             bg-blue-500 text-white hover:bg-blue-400 hover:bg-blue-400
+        "
         >
-          cancel
+          Submit
         </button>
-      )}
-    </form>
+        {setEditingTaskId && (
+          <button
+            onClick={setEditingTaskId}
+            type="button"
+            className={`ml-2 text-white px-4 py-2 bg-red-500 hover:bg-red-400 rounded transform transition duration-200 cursor-pointer`}
+          >
+            cancel
+          </button>
+        )}
+      </form>
+      <ToastContainer />
+    </>
   );
 };
 

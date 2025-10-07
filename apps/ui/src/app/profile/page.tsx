@@ -1,10 +1,10 @@
 "use client";
 
+import { TaskItem } from "../components/TaskItem";
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext";
 import AddTask from "../components/AddTask";
-import DeleteTask from "../components/DeleteTask";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchTasks } from "../services/fetchTasks";
 import { Task } from "../types/task";
 import Logout from "../components/Logout";
@@ -12,7 +12,6 @@ import { redirect } from "next/navigation";
 
 const ProfilePage = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
@@ -71,53 +70,12 @@ const ProfilePage = () => {
             ) : (
               <ul className="space-y-3 mt-3">
                 {tasks.map((task) => (
-                  <li
-                    key={task.id}
-                    className="flex justify-between p-3 rounded shadow bg-green-100"
-                  >
-                    <div className="flex-1">
-                      {!editingTaskId && (
-                        <>
-                          <h2 className="font-bold">{task.title}</h2>
-                          <p>{task.description}</p>
-                        </>
-                      )}
-                      {editingTaskId === task.id && (
-                        <AddTask
-                          taskToEdit={{
-                            id: task.id,
-                            title: task.title,
-                            description: task.description,
-                          }}
-                          onTaskCreated={onTaskCreated}
-                          setEditingTaskId={() => setEditingTaskId(null)}
-                        />
-                      )}
-                    </div>
-
-                    {!editingTaskId && (
-                      <>
-                        <button
-                          onClick={() =>
-                            setEditingTaskId((prev) =>
-                              prev === task.id ? null : task.id
-                            )
-                          }
-                          className="self-start px-4 py-2  bg-teal-900 text-white  rounded hover:scale-95 transform transition duration-200  cursor-pointer"
-                        >
-                          Edit
-                        </button>
-                        <DeleteTask
-                          taskId={task.id}
-                          onTaskDeleted={() =>
-                            queryClient.invalidateQueries({
-                              queryKey: ["userTasks"],
-                            })
-                          }
-                        />
-                      </>
-                    )}
-                  </li>
+                  <TaskItem
+                    task={task}
+                    editingTaskId={editingTaskId}
+                    onTaskCreated={onTaskCreated}
+                    setEditingTaskId={setEditingTaskId}
+                  />
                 ))}
               </ul>
             )}
