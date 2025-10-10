@@ -9,7 +9,6 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prismaService/prisma.service';
 import { CreateUserDto, LoginUserDto } from './dto/create-user-dto';
 import { JwtPayload } from './jwt-payload.interface';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -57,6 +56,7 @@ export class AuthService {
     } catch (error) {
       const prismaErrorCode = (error as any).code;
 
+      // Prisma prismaErrorCode === 'P2002' when violates unique properties returns error
       if (prismaErrorCode === 'P2002') {
         const target = (error as any).meta?.target;
         const field = Array.isArray(target) ? target.join(', ') : target;

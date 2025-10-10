@@ -45,7 +45,7 @@ const ProfilePage = () => {
         </div>
         <Logout />
       </div>
-      <div className="bg-gray-100 h-screen flex justify-center">
+      <div className="h-screen flex justify-center">
         <div className="w-1/2 m-10">
           <div className="bg-white shadow rounded-lg p-6 ">
             <div className="flex justify-between rounded-lg p-6 mb-8">
@@ -71,6 +71,7 @@ const ProfilePage = () => {
               <ul className="space-y-3 mt-3">
                 {tasks.map((task) => (
                   <TaskItem
+                    key={task.id}
                     task={task}
                     editingTaskId={editingTaskId}
                     onTaskCreated={onTaskCreated}

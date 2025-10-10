@@ -8,6 +8,7 @@ export function useUpdateTaskMutation() {
   return useMutation({
     mutationFn: updateTask,
     onSuccess: (updatedTask: Task) => {
+      console.log("Updated task from mutation:", updatedTask);
       queryClient.setQueryData(["userTasks"], (oldData: Task[] | undefined) => {
         if (!oldData) return [];
         return oldData.map((task) =>
