@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useUser } from "../context/UserContext";
 import { createTask } from "../services/createTask";
 import { Task } from "../types/task";
-import { updateTask } from "../services/updateTask";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ToastContainer, toast } from "react-toastify";
 import { useUpdateTaskMutation } from "../hooks/useUpdateTaskMutation";

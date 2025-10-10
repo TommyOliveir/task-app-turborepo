@@ -27,6 +27,7 @@ export const TaskItem = ({
 
   const handleCheck = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newIsDone = e.target.checked;
+    console.log("hey", task.id, newIsDone);
 
     try {
       if (task.id) {
@@ -42,6 +43,8 @@ export const TaskItem = ({
     }
   };
 
+  console.log("task.isDone", task.isDone);
+
   return (
     <li
       key={task.id}
@@ -53,14 +56,14 @@ export const TaskItem = ({
             <input
               className="cursor-pointer w-5 h-5 mr-3 "
               type="checkbox"
-              id="done"
-              name="done"
+              id={`done-${task.id}`}
+              name={`done-${task.id}`}
               checked={task.isDone}
               onChange={handleCheck}
             />
             <div>
               <label
-                htmlFor="done"
+                htmlFor={`done-${task.id}`}
                 className={`${task.isDone ? "line-through" : ""} font-bold cursor-pointer`}
               >
                 {task.title}
@@ -75,7 +78,7 @@ export const TaskItem = ({
               id: task.id,
               title: task.title,
               description: task.description,
-              isDone: false,
+              isDone: task.isDone,
             }}
             onTaskCreated={onTaskCreated}
             setEditingTaskId={() => setEditingTaskId(null)}

@@ -13,8 +13,12 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // make global pipe works such as 'empty task - POST REQUEST' will response bad request
-  app.useGlobalPipes(new ValidationPipe());
+  // make global pipe works such as 'empty task - POST REQUEST' will response bad request and prohibit additional properties anf value
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 
   await app.listen(process.env.PORT ?? port);
   logger.log(`Application listening to port ${port}`);
