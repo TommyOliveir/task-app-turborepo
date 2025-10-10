@@ -1,6 +1,8 @@
 "use client";
+
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -11,6 +13,18 @@ export default function Signup() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (success) {
+      toast.success(success);
+    }
+  }, [success]);
 
   const handleChange = (e: { target: { name: any; value: any } }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,23 +49,23 @@ export default function Signup() {
       const data = await res.json();
 
       if (res.ok) {
-        setSuccess("Signup successful!");
+        setSuccess("Signup successful! You can now login, Go to login page");
         setFormData({ username: "", email: "", password: "" });
       } else {
         setError(data.message || "Something went wrong");
       }
     } catch (err) {
       setError("Network error. Try again.");
+      console.error(err);
     }
   };
 
   return (
-    <div className="grid place-items-center bg-gray-100">
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
+    <div className="mt-20">
+      <ToastContainer />
       <form
         onSubmit={handleSubmit}
-        className="p-6 space-y-6 bg-white rounded p-4 shadow w-1/4"
+        className="p-6 space-y-6 bg-white rounded p-4 shadow w-1/4 m-auto "
       >
         <h2 className="font-bold text-2xl">Sign up</h2>
         <p>

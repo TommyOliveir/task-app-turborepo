@@ -32,10 +32,10 @@ const LoginUser = () => {
   };
 
   return (
-    <div className="bg-gray-100 h-screen grid place-items-center">
+    <div className="h-screen pt-20">
       <form
         onSubmit={handleSubmit}
-        className="p-6 space-y-6 bg-white rounded p-4 shadow w-1/4"
+        className="p-6 space-y-6 bg-white rounded p-4 shadow-lg w-1/4  m-auto "
       >
         <h2 className="font-bold text-2xl">Log in</h2>
         <p>
