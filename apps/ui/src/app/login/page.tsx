@@ -31,6 +31,10 @@ const LoginUser = () => {
     redirect("/signup");
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:3000/auth/google";
+  };
+
   return (
     <div className="h-screen pt-20">
       <form
@@ -60,12 +64,27 @@ const LoginUser = () => {
           onChange={handleChange}
           className="border border-gray-300  p-2 rounded w-full"
         />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:scale-95 transform transition duration-200 cursor-pointer"
-        >
-          Submit
-        </button>
+        <>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:scale-95 transform transition duration-200 cursor-pointer"
+          >
+            Submit
+          </button>
+          <p className="text-center">OR</p>
+          <button
+            type="button"
+            className="w-full border flex gap-3 justify-center  rounded hover:scale-95 px-4 py-2 transform transition duration-200 cursor-pointer"
+            onClick={handleGoogleLogin}
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png"
+              alt="Google Logo"
+              className="w-5 h-5"
+            />
+            Sign in with Google
+          </button>
+        </>
       </form>
     </div>
   );

@@ -27,7 +27,7 @@ export const TaskItem = ({
 
   const handleCheck = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newIsDone = e.target.checked;
-    console.log("hey", task.id, newIsDone);
+    const TokenGoogleUser = localStorage.getItem("TokenGoogleUser");
 
     try {
       if (task.id) {
@@ -35,6 +35,7 @@ export const TaskItem = ({
           taskId: task.id,
           updatedData: { isDone: newIsDone },
           user,
+          tokenGoogle: TokenGoogleUser,
         });
       }
     } catch (err: any) {
@@ -42,8 +43,6 @@ export const TaskItem = ({
       console.log("Task update failed");
     }
   };
-
-  console.log("task.isDone", task.isDone);
 
   return (
     <li

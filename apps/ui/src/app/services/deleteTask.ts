@@ -1,6 +1,6 @@
 export const deleteTask = async (
   taskId: string,
-  accessToken: string | undefined
+  accessToken: string | undefined | null
 ) => {
   try {
     const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {

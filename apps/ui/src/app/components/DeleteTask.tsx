@@ -11,12 +11,14 @@ type deleteTaskProps = {
 
 const DeleteTask = ({ taskId, onTaskDeleted }: deleteTaskProps) => {
   const { user } = useUser();
+  const TokenGoogleUser = localStorage.getItem("TokenGoogleUser");
+  const token = user?.accessToken || TokenGoogleUser;
 
   const handleDelete = async (taskId: string) => {
     console.log("Id delete", taskId);
 
     try {
-      await deleteTask(taskId, user?.accessToken);
+      await deleteTask(taskId, token);
       onTaskDeleted();
     } catch (err) {
       console.error("Task creation failed", err);

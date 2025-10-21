@@ -9,6 +9,12 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prismaService/prisma.service';
 import { CreateUserDto, LoginUserDto } from './dto/create-user-dto';
 import { JwtPayload } from './jwt-payload.interface';
+import { Request } from 'express';
+
+interface AuthenticatedRequest extends Request {
+  user?: any;
+  message?: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -16,6 +22,43 @@ export class AuthService {
     private jwtService: JwtService,
     private prisma: PrismaService,
   ) {}
+
+  async googleLogin(req: AuthenticatedRequest) {
+    if (!req.user) {
+      return 'No user from google';
+    }
+
+    const googleUser = req.user;
+
+    let user = await this.prisma.user.findUnique({
+      where: { email: googleUser.email },
+    });
+
+    // If user doesn't exist, create new one
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          email: googleUser.email,
+          username: googleUser.firstName,
+          password: 'password',
+        },
+      });
+    }
+
+    // Prepare consistent JWT payload
+    const payload = {
+      username: user.username,
+      userId: user.id,
+      email: user.email,
+    };
+
+    const jwtToken = this.jwtService.sign(payload);
+
+    return {
+      user,
+      accessToken: jwtToken,
+    };
+  }
 
   async validateUser(
     loginUserDto: LoginUserDto,
