@@ -2,10 +2,12 @@ import { Task } from "../types/task";
 
 export const fetchTasks = async (): Promise<Task[]> => {
   const userObj = JSON.parse(localStorage.getItem("user") || "{}");
-  if (!userObj?.accessToken) {
+  const tokenGoogleUser = localStorage.getItem("TokenGoogleUser");
+
+  if (!userObj?.accessToken && !tokenGoogleUser) {
     throw new Error("No token found in localStorage");
   }
-  const token = userObj.accessToken;
+  const token = userObj.accessToken || tokenGoogleUser;
 
   const res = await fetch("http://localhost:3000/tasks/userstasks", {
     headers: {

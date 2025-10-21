@@ -4,19 +4,22 @@ import { User } from "../types/user";
 type CreateTaskParams = {
   addTaskData: CreateTask;
   user: User | null;
+  tokenGoogle?: string | null;
 };
 
-export async function createTask({ addTaskData, user }: CreateTaskParams) {
-  if (!user) {
-    throw new Error("User is not logged in");
-  }
-
+export async function createTask({
+  addTaskData,
+  user,
+  tokenGoogle,
+}: CreateTaskParams) {
+  const token = user?.accessToken || tokenGoogle;
+  console.log(tokenGoogle);
   try {
     const res = await fetch("http://localhost:3000/tasks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(addTaskData),
     });
