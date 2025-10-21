@@ -1,19 +1,45 @@
 "use client";
 
 import { TaskItem } from "../components/TaskItem";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../context/UserContext";
 import AddTask from "../components/AddTask";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTasks } from "../services/fetchTasks";
 import { Task } from "../types/task";
 import Logout from "../components/Logout";
-import { redirect } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 
 const ProfilePage = () => {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const tokenFromUrl = searchParams.get("token");
+  const userDataFromUrl = searchParams.get("userGoogle");
+  const parsedUser = userDataFromUrl ? JSON.parse(userDataFromUrl) : null;
+
+  const [googleUser, setGoogleUser] = useState<string | null>(null);
+  const [tokenGoogleUser, setTokenGoogleUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Handle saving token from URL - for educational purpose
+      if (tokenFromUrl) {
+        localStorage.setItem("TokenGoogleUser", String(tokenFromUrl));
+        localStorage.setItem("googleUser", JSON.stringify(parsedUser));
+      }
+
+      // Retrieve token and user from localStorage
+      const storedUser = localStorage.getItem("googleUser");
+      const storedUserObj = storedUser ? JSON.parse(storedUser) : null;
+
+      const TokenGoogleUser = localStorage.getItem("TokenGoogleUser");
+      setGoogleUser(storedUserObj);
+      setTokenGoogleUser(TokenGoogleUser);
+    }
+  }, [tokenFromUrl, parsedUser]);
 
   const {
     data: tasks = [],
@@ -31,16 +57,21 @@ const ProfilePage = () => {
   };
 
   if (isLoading) return <p>Loading tasks...</p>;
-  if (!user?.accessToken) {
-    return redirect("/login");
-  }
+
+  // for future add this
+  // if (isLogin) {
+  //   redirect("/login");
+  // }
+
   if (isError) return <p>Error: {error?.message}</p>;
 
   return (
     <>
       <div className="mb-6 flex p-4 justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Hello, {user?.username} 👋</h1>
+          <h1 className="text-3xl font-bold">
+            Hello, {user?.username || googleUser} 👋
+          </h1>
           <p className="text-gray-600 mt-1">Here’s your task list for today:</p>
         </div>
         <Logout />
@@ -53,8 +84,8 @@ const ProfilePage = () => {
               <button
                 onClick={() => setIsAddTaskOpen((prev) => !prev)}
                 className={` ${
-                  isAddTaskOpen ? "bg-red-500" : "bg-blue-500"
-                } text-white px-4 py-2 rounded hover:bg-blue-400 transform transition duration-200 cursor-pointer`}
+                  isAddTaskOpen ? "bg-red-500 hover:bg-red-600 " : "bg-blue-500"
+                }  text-white px-4 py-2 rounded transform transition-transform duration-300 hover:bg-blue-600 cursor-pointer`}
               >
                 {isAddTaskOpen ? "X" : "Add Task"}
               </button>

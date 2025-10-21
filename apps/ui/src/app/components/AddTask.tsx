@@ -25,10 +25,10 @@ const AddTask = ({
     description: taskToEdit?.description || "",
   });
 
+  const tokenGoogle = localStorage.getItem("TokenGoogleUser");
   const queryClient = useQueryClient();
 
   const { mutateAsync: updateTaskMutateAsync } = useUpdateTaskMutation();
-
   const { mutateAsync: createTaskMutateAsync } = useMutation({
     mutationFn: createTask,
     onSuccess: () => {
@@ -46,7 +46,6 @@ const AddTask = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
 
     try {
       if (taskToEdit?.id) {
@@ -54,9 +53,10 @@ const AddTask = ({
           taskId: taskToEdit.id,
           updatedData: addTaskData,
           user,
+          tokenGoogle,
         });
       } else {
-        await createTaskMutateAsync({ addTaskData, user });
+        await createTaskMutateAsync({ addTaskData, user, tokenGoogle });
       }
 
       setAddTaskData({ title: "", description: "" });
@@ -95,7 +95,7 @@ const AddTask = ({
         <button
           type="submit"
           className="px-4 py-2 rounded transform transition duration-200 cursor-pointer 
-             bg-blue-500 text-white hover:bg-blue-400 hover:bg-blue-400
+             bg-blue-500 text-white hover:bg-blue-600 hover:bg-blue-400
         "
         >
           Submit

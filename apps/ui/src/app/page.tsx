@@ -8,7 +8,7 @@ export default function Home() {
 "
     >
       <h1 className="font-bold text-2xl">Welcome to your Todo App</h1>
-      <p>A pet project of Tommy Oliveir build in nest js and next js</p>
+      <p>A pet project of Tommy Oliveir build with NestJS and Next.js</p>
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded hover:scale-95 transform transition duration-200 cursor-pointer"
         onClick={() => redirect("/login")}
