@@ -28,7 +28,6 @@ export class TasksController {
 
   @Get('userstasks')
   async getAllTasksForCurrentUser(@Req() req: any) {
-    const userId = req.user.userId;
     const { search } = req.query;
 
     let tasks;
@@ -36,7 +35,9 @@ export class TasksController {
     if (search) {
       tasks = await this.tasksService.getAllTasksWithFilter(search);
     } else {
-      tasks = await this.tasksService.getAllTasksForCurrentUser(userId);
+      tasks = await this.tasksService.getAllTasksForCurrentUser(
+        req.user.userId,
+      );
     }
 
     this.logger.verbose(
@@ -48,17 +49,15 @@ export class TasksController {
 
   @Post()
   async create(@Body() createTaskDto: CreateTaskDto, @Req() req: any) {
-    const userId = req.user.userId;
     this.logger.verbose(
       `User "${req.user.username}" create new task ${JSON.stringify(createTaskDto)}`,
     );
-    return await this.tasksService.createTask(createTaskDto, userId);
+    return await this.tasksService.createTask(createTaskDto, req.user.userId);
   }
 
   @Get(':id')
   getTaskById(@Param('id') id: string, @Req() req: any) {
-    const userId = req.user.userId;
-    return this.tasksService.getTaskById(id, userId);
+    return this.tasksService.getTaskById(id, req.user.userId);
   }
 
   @Patch(':id')
