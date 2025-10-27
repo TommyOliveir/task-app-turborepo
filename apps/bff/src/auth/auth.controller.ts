@@ -7,6 +7,7 @@ import {
   Req,
   Get,
   Res,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto/create-user-dto';
@@ -31,7 +32,7 @@ export class AuthController {
     console.log('req.user:', req.user);
 
     if (typeof data === 'string' || !data.user) {
-      res.status(400).send('No user data');
+      res.status(HttpStatus.BAD_REQUEST).send('No user data');
       return;
     }
 
@@ -49,7 +50,7 @@ export class AuthController {
   async login(
     @Body() loginUserDto: LoginUserDto,
   ): Promise<{ accessToken: string }> {
-    return this.authService.validateUser(loginUserDto);
+    return this.authService.login(loginUserDto);
   }
 
   @Post('signup')

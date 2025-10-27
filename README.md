@@ -133,3 +133,16 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
 - [Configuration Options](https://turborepo.com/docs/reference/configuration)
 - [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+
+## How to run the Task app
+
+Our monorepo setup enables running both the UI and backend of the Task App.
+
+1. Make sure to have Node.js >= 20
+2. docker compose up
+3. run command - yarn run dev
+
+# Note
+
+If you need to run a specific part of the project for technical reasons, please refer to the README in that package and check its
+package.json for available scripts
