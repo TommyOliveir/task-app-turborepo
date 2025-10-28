@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prismaService/prisma.service';
 import { CreateUserDto, LoginUserDto } from './dto/create-user-dto';
 import { JwtPayload } from './jwt-payload.interface';
-import { IAuthenticatedRequest } from 'src/types/IAuthenticatedRequest';
+import { IAuthenticatedRequest } from 'src/types/AuthenticatedRequest';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +17,24 @@ export class AuthService {
     private jwtService: JwtService,
     private prisma: PrismaService,
   ) {}
+
+  private async ensureNoUserDuplicates(email: string, username: string) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    const existingUsername = await this.prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (existingUsername && existingUser)
+      throw new ConflictException('This user already registered');
+
+    if (existingUser) throw new ConflictException('Email already exists');
+
+    if (existingUsername)
+      throw new ConflictException('Username already exists');
+  }
 
   async googleLogin(req: IAuthenticatedRequest) {
     if (!req.user) {
@@ -84,21 +102,7 @@ export class AuthService {
     try {
       const { username, email, password } = createUserDto;
 
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email },
-      });
-
-      if (existingUser) {
-        throw new ConflictException('Email already exists');
-      }
-
-      const existingUsername = await this.prisma.user.findUnique({
-        where: { username },
-      });
-
-      if (existingUsername) {
-        throw new ConflictException('Username already exists');
-      }
+      await this.ensureNoUserDuplicates(email, username);
 
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(password, salt);

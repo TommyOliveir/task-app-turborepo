@@ -5,7 +5,4 @@ export interface ITask {
   isDone: boolean;
 }
 
-export interface ICreateTask {
-  title: string;
-  description: string;
-}
+export type CreateTask = Pick<ITask, "title" | "description">;

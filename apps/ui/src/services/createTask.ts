@@ -1,9 +1,9 @@
-import { ICreateTask } from "@/types/task";
-import { User } from "@/types/user";
+import { CreateTask } from "@/types/task";
+import { IUser } from "@/types/user";
 
 type CreateTaskParams = {
-  addTaskData: ICreateTask;
-  user: User | null;
+  addTaskData: CreateTask;
+  user: IUser | null;
   tokenGoogle?: string | null;
 };
 

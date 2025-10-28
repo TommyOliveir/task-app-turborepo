@@ -1,10 +1,10 @@
 import { ITask } from "@/types/task";
-import { User } from "@/types/user";
+import { IUser } from "@/types/user";
 
 type UpdateTaskParams = {
   taskId: string | undefined;
   updatedData: Partial<ITask>;
-  user: User | null;
+  user: IUser | null;
   tokenGoogle: String | null;
 };
 
