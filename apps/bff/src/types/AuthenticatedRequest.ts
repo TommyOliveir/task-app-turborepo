@@ -1,7 +1,7 @@
 import { Request } from 'express';
-import { User } from './User';
+import { IGoogleUser } from './GoogleUser';
 
 export interface IAuthenticatedRequest extends Request {
-  user?: User;
+  user?: IGoogleUser;
   message?: string;
 }
